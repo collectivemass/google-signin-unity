@@ -23,7 +23,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.android.tools.build:gradle:3.2.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -50,7 +50,7 @@ project.ext {
     }
     if (unity_exe == null || unity_exe.isEmpty()) {
         if (os_osx) {
-            unity_exe = '/Applications/Unity/Unity.app/Contents/MacOS/Unity'
+            unity_exe = '/Applications/Unity/Hub/2021.3.11f1/Unity.app/Contents/MacOS/Unity'
         } else if (os_windows) {
             unity_exe = 'c:\\program files\\unity\\editor\\unity.exe'
         } else {
@@ -152,7 +152,8 @@ task import_jarresolver() {
 
     doLast {
         def tree = fileTree(resolverDir) {
-            include "*.unitypackage"
+            include "external-dependency-manager-latest.unitypackage"
+            //include "external-dependency-manager-1.2.174.unitypackage"
         }
         def jarresolver_package = tree.getSingleFile()
         def argv = [
@@ -174,7 +175,7 @@ task import_jarresolver() {
                 ignoreExitValue true
         }
         if (ext.execResult.exitValue != 0) {
-            println "***Error Running Unity:"
+            println "***Error Running Unity:" + ext.execResult.exitValue;
             def src = file('build/import_jarresolver.log').text
             print src
             throw new GradleException('error importing jarresolver plugin')
@@ -242,7 +243,8 @@ task package_plugin () {
 
     doLast {
         def tree = fileTree(resolverDir) {
-            include "*.unitypackage"
+            //include "*.unitypackage"
+            include "external-dependency-manager-latest.unitypackage"
         }
         def jarresolver_package = tree.getSingleFile()
         def argv = [
@@ -257,7 +259,6 @@ task package_plugin () {
                 "-importPackage", jarresolver_package,
                 "-exportPackage",
                     "Assets/GoogleSignIn",
-                    "Assets/Parse",
                     "Assets/PlayServicesResolver",
                     "Assets/Plugins",
                 "${exportPath}",
